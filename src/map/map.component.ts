@@ -3,7 +3,7 @@ import {Subject, combineLatest, ReplaySubject, BehaviorSubject} from 'rxjs';
 import {takeUntil, take} from 'rxjs/operators';
 
 import {MapApiService} from './map-api.service';
-import {MapOptions, GoogleMaps, GoogleMap, MouseEvent} from './map-types';
+import {MapOptions, GoogleMaps, GoogleMap, MouseEvent, MapsEventListener} from './map-types';
 import { MarkerComponent } from './marker.component';
 import {InfoWindowComponent} from './info-window.component';
 
@@ -41,6 +41,8 @@ export class MapComponent implements OnInit, OnDestroy {
   private readonly infoWindows$ = new ReplaySubject<InfoWindowComponent[]>(1);
   private readonly map$ = new ReplaySubject<GoogleMap>(1);
 
+  private clickListener: MapsEventListener;
+
   constructor(private readonly mapApiService: MapApiService) {}
 
   ngOnInit() {
@@ -53,7 +55,7 @@ export class MapComponent implements OnInit, OnDestroy {
         mapEl.style.width = this.width;
         const map = new mapsApi.Map(mapEl, options);
         this.map$.next(map);
-        map.addListener('click', (event: MouseEvent) => {
+        this.clickListener = map.addListener('click', (event: MouseEvent) => {
           this.click.emit(event);
         });
     });
@@ -75,6 +77,7 @@ export class MapComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    this.clickListener.remove();
   }
 
 }

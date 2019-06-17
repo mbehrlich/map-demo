@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, Input, OnInit, OnDestroy, ViewChild, ElementRef, Output, EventEmitter } from "@angular/core";
-import { InfoWindowOptions, GoogleMapsInfoWindow, GoogleMap, MVCObject } from './map-types';
+import { InfoWindowOptions, GoogleMapsInfoWindow, GoogleMap, MVCObject, MapsEventListener } from './map-types';
 import {Subject, BehaviorSubject, ReplaySubject, combineLatest} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {MapApiService} from './map-api.service';
@@ -39,6 +39,7 @@ export class InfoWindowComponent implements OnInit, OnDestroy {
   private readonly map$ = new ReplaySubject<GoogleMap>(1);
   private infoWindow?: GoogleMapsInfoWindow;
   private map?: GoogleMap;
+  private closeClickListener: MapsEventListener;
 
   constructor(private readonly mapApiService: MapApiService) {}
 
@@ -49,7 +50,7 @@ export class InfoWindowComponent implements OnInit, OnDestroy {
     .subscribe(([mapsApi, options, content, map, open, anchor]) => {
       if (!this.infoWindow) {
         this.infoWindow = new mapsApi.InfoWindow(options);
-        this.infoWindow.addListener('closeclick', () => {
+        this.closeClickListener = this.infoWindow.addListener('closeclick', () => {
           this.open$.next(false);
           this.openChange.emit(false);
         });
@@ -73,6 +74,7 @@ export class InfoWindowComponent implements OnInit, OnDestroy {
     if (this.infoWindow) {
       this.infoWindow.close();
     }
+    this.closeClickListener.remove();
   }
 
   setMap(map: GoogleMap) {
