@@ -3,7 +3,7 @@ export interface GoogleMaps {
   Marker: {new (options?: MarkerOptions): GoogleMapsMarker};
   InfoWindow: {new (options?: InfoWindowOptions): GoogleMapsInfoWindow};
   LatLng: {new (lat: number, lng: number, noWrap?: boolean): GoogleMapsLatLng};
-  event: {addListener(instance: MVCObject, eventName: string, handler: Function)};
+  event: {addListener(instance: MVCObject, eventName: string, handler: Function): void};
 }
 
 export interface GoogleMap extends MVCObject {
