@@ -11,21 +11,22 @@ declare interface GoogleWindow extends Window {
   };
 }
 
+function getMapsGlobal(): GoogleMaps {
+  const googleWindow = window as GoogleWindow;
+  if (googleWindow && googleWindow.google && googleWindow.google.maps) {
+    return googleWindow.google.maps;
+  }
+  throw new Error('Missing Google Window');
+}
+
 @Injectable()
 export class MapApiService {
   private readonly loaded$: Observable<GoogleMaps>;
 
   constructor(@Inject(API_KEY) apiKey: string, httpClient: HttpClient) {
-    const googleWindow = window as GoogleWindow;
-
-    if (googleWindow.google && googleWindow.google.maps) {
-      const maps = googleWindow.google.maps;
-      this.loaded$ = httpClient.jsonp(
-        'https://maps.googleapis.com/maps/api/js?key=' + apiKey, 'callback')
-        .pipe(map(() => maps), publishReplay(), refCount());
-    } else {
-      this.loaded$ = throwError(new Error('Failed to load Google Maps window'))
-    }
+    this.loaded$ = httpClient.jsonp(
+      'https://maps.googleapis.com/maps/api/js?key=' + apiKey, 'callback')
+      .pipe(map(getMapsGlobal), publishReplay(), refCount());
   }
 
   loadedApi(): Observable<GoogleMaps> {
