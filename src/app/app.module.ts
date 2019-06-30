@@ -12,7 +12,9 @@ import { CommonModule } from '@angular/common';
   imports: [
     BrowserModule,
     CommonModule,
-    MapModule.forRoot('Your API key here'),
+    // Your API key goes here. Leave empty to see development-only version of
+    // maps.
+    MapModule.forRoot(''),
   ],
   providers: [],
   bootstrap: [AppComponent]
