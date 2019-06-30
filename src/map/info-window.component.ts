@@ -33,7 +33,7 @@ export class InfoWindowComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
   private readonly options$ = new BehaviorSubject<InfoWindowOptions>({});
-  private readonly open$ = new BehaviorSubject<boolean>(false);
+  readonly open$ = new BehaviorSubject<boolean>(false);
   private readonly anchor$ = new BehaviorSubject<MVCObject|null>(null);
   private readonly content$ = new ReplaySubject<Node>(1);
   private readonly map$ = new ReplaySubject<GoogleMap>(1);
