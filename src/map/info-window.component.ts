@@ -33,13 +33,13 @@ export class InfoWindowComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
   private readonly options$ = new BehaviorSubject<InfoWindowOptions>({});
-  private readonly open$ = new BehaviorSubject<boolean>(false);
+  readonly open$ = new BehaviorSubject<boolean>(false);
   private readonly anchor$ = new BehaviorSubject<MVCObject|null>(null);
   private readonly content$ = new ReplaySubject<Node>(1);
   private readonly map$ = new ReplaySubject<GoogleMap>(1);
   private infoWindow?: GoogleMapsInfoWindow;
   private map?: GoogleMap;
-  private closeClickListener: MapsEventListener;
+  private closeClickListener?: MapsEventListener;
 
   constructor(private readonly mapApiService: MapApiService) {}
 
@@ -61,7 +61,7 @@ export class InfoWindowComponent implements OnInit, OnDestroy {
       if (!open) {
         this.infoWindow.close();
       } else if (map) {
-        this.infoWindow.open(map, anchor);
+        this.infoWindow.open(map, anchor || undefined);
       }
     });
 
@@ -74,7 +74,9 @@ export class InfoWindowComponent implements OnInit, OnDestroy {
     if (this.infoWindow) {
       this.infoWindow.close();
     }
-    this.closeClickListener.remove();
+    if (this.closeClickListener) {
+      this.closeClickListener.remove();
+    }
   }
 
   setMap(map: GoogleMap) {

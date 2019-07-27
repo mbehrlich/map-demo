@@ -41,7 +41,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private readonly infoWindows$ = new ReplaySubject<InfoWindowComponent[]>(1);
   private readonly map$ = new ReplaySubject<GoogleMap>(1);
 
-  private clickListener: MapsEventListener;
+  private clickListener?: MapsEventListener;
 
   constructor(private readonly mapApiService: MapApiService) {}
 
@@ -77,7 +77,10 @@ export class MapComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    this.clickListener.remove();
+
+    if (this.clickListener) {
+      this.clickListener.remove();
+    }
   }
 
 }
